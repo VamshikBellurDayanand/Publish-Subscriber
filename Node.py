@@ -1,4 +1,5 @@
-import Message
+import random
+import Util
 
 class Node:
 
@@ -17,13 +18,16 @@ class Node:
     # List to hold the outgoing message queue
     out_going_message_queue = []
 
+    # No of random nodes, the message to be gossiped.
+    no_of_random_nodes = Util.NO_OF_RANDOM_NODES
 
     # Constructor of Node
-    def __init__(self):
+    def __init__(self, node_Id):
         print ("This is Node's constructor")
+        self.node_Id = node_Id
 
     # Nodes execute this method to get the message
-    def get_message_from_outgoing_queue(self):
+    def get_message(self):
         print ("Get message called")
 
     # Handle each message present in the incoming queue
@@ -33,6 +37,7 @@ class Node:
     # Send message to other nodes by placing the message in the outgoing queue
     def send_message(self):
         print ("Send message called")
+        print random.sample(set(self.connected_nodes), self.no_of_random_nodes)  # select random nodes to gossip
 
 
 
