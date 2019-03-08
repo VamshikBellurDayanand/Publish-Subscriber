@@ -7,3 +7,5 @@ class EventType(enum.Enum):
     DELETE_NODE = 2
     SEND_MESSAGE = 3
     RECEIVE_MESSAGE = 4
+    ADD_SUBSCRIPTION = 5
+    DELETE_SUBSCRIPTION = 6

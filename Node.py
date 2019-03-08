@@ -21,10 +21,22 @@ class Node:
     # No of random nodes, the message to be gossiped.
     no_of_random_nodes = Util.NO_OF_RANDOM_NODES
 
+    # Timestamp of each node
+    time_stamp = 0
+
+    # Subscription List
+    subscription_list = {}
+
     # Constructor of Node
-    def __init__(self, node_Id):
-        print ("This is Node's constructor")
+    def __init__(self, node_Id, subscription_list, connected_node_list, connected_node_cost_list, timestamp):
         self.node_Id = node_Id
+        self.subscription_list = subscription_list
+        self.time_stamp = timestamp
+
+        i = 0
+        while i < len(connected_node_list):
+            self.connected_nodes[str(connected_node_list[i])] = connected_node_cost_list[i]
+            i += 1
 
     # Nodes execute this method to get the message
     def get_message(self):
