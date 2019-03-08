@@ -1,4 +1,5 @@
 from Node import Node
+import Util
 
 class Main:
 
@@ -23,7 +24,6 @@ class Main:
 
         # printing the data from file : line by line
         for x in file_object:
-            #print x
             self.create_new_node(x)
 
     # Read the event configuration file and trigger the respective events
@@ -33,7 +33,6 @@ class Main:
 
         # printing the data from file : line by line
         for x in file_object:
-            #print x
             self.create_new_event(x)
 
     # Create a new node and configure it's neighbours
@@ -42,40 +41,62 @@ class Main:
         node_info_list = node_info.split(":")
 
         node_id = node_info_list[0]
-        subscription_list = node_info_list[1]
+        subscription_list = node_info_list[1].split(",")
         connected_node_list = node_info_list[2].split(",")
         connected_node_cost_list = node_info_list[3].split(",")
-        timestamp = node_info_list[4]
 
-        new_node = Node(node_id, subscription_list, connected_node_list, connected_node_cost_list, timestamp)
-        print new_node.node_Id
-        print new_node.connected_nodes
+        new_node = Node(node_id, subscription_list, connected_node_list, connected_node_cost_list)
+        print(new_node.node_Id)
+        print(new_node.connected_nodes)
         self.node_list.append(new_node)                              # Add to the node list
+        new_node.connected_nodes.clear()
 
     # Delete the existing node and configure it's neighbours
     def remove_node(self, node_info):
-        print node_info
+        print(node_info)
         if node_info in self.node_list:                             # If node is active and is not deleted
             for node in node_info.connected_nodes:                  # Update in all of the node's neighbours
                 if node_info.node_Id in node.connected_nodes:
                     node.connected_nodes.pop(node_info.node_Id)
             self.node_list.remove(node_info.node_Id)                # Remove the node from the list
         else:
-            print ("Node with id " + node_info.node_Id + " is already deleted.")
+            print("Node with id " + node_info.node_Id + " is already deleted.")
 
     # Create new event and add it to the event queue
     def create_new_event(self, event_info):
-        print event_info
-        self.event_list.append(event_info)                          # Add to the event list
-        self.event_list.sort(key=lambda x: x.time_stamp)
+        print(event_info)
+        event_info_list = event_info.split(":")
+        timestamp = event_info_list[0]
+        event_type = event_info_list[1]
+
+        if event_type == 'ADD_NODE':
+            print("The event type is Add Node")
+
+        elif event_type == 'DELETE_NODE':
+            print("The event type is Delete Node")
+
+        elif event_type == 'SEND_MESSAGE':
+            print("The event type is Send Message")
+
+        elif event_type == 'RECEIVE_MESSAGE':
+            print("The event type is Receive Message")
+
+        elif event_type == 'ADD_SUBSCRIPTION':
+            print("The event type is Add Subscription")
+
+        elif event_type == 'DELETE_SUBSCRIPTION':
+            print("The event type is Delete Subscription")
+
+        #self.event_list.append(event_info)                          # Add to the event list
+
 
     # Trigger the event based on the time_stamp
     def trigger_event(self):
-        print ("Trigger event called")
+        print("Trigger event called")
 
     # Dynamically add new nodes based on the event
     def add_new_node(selfs, node_info):
-        print (node_info)
+        print(node_info)
 
         selfs.create_new_node(node_info)
 

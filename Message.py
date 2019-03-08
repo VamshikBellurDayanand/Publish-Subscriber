@@ -3,3 +3,4 @@ class Message:
         self.topic = topic
         self.msg = msg
 
+
