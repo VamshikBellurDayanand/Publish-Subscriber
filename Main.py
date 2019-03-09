@@ -13,9 +13,26 @@ class Main:
 
     # Constructor of Main file
     def __init__(self):
-        print ("Main constructor")
+        print("Main constructor")
         self.read_node_configuration_file(self.node_configuration_filePath)    # Read the node configuration file
         self.read_event_configuration_file(self.event_configuration_filePath)  # Read the event configuration file
+        self.trigger_event()
+        #self.print_event_list()
+        self.print_nodes_connected_list()
+
+    # print the active nodes
+    def print_event_list(self):
+        for node in self.node_list:
+            print(node.node_Id)
+
+    # print node's connected list
+    def print_nodes_connected_list(self):
+        for node in self.node_list:
+            print("The present node id is " + node.node_Id)
+            for key,val in node.connected_nodes.items():
+                print("key: " + key + ":" + val)
+
+
 
     # Read the Node configuration file and create the Node objects
     def read_node_configuration_file(self, filePath):
@@ -49,7 +66,8 @@ class Main:
         print(new_node.node_Id)
         print(new_node.connected_nodes)
         self.node_list.append(new_node)                              # Add to the node list
-        new_node.connected_nodes.clear()
+        #new_node.connected_nodes.clear()
+
 
     # Delete the existing node and configure it's neighbours
     def remove_node(self, node_info):
@@ -116,18 +134,53 @@ class Main:
 
             new_Event = Event(timestamp, event_type, node_id, subscription_list, None, None, None, None)
 
-        self.event_list.append(event_info)                          # Add to the event list
+        self.event_list.append(new_Event)                          # Add to the event list
 
 
     # Trigger the event based on the time_stamp
     def trigger_event(self):
         print("Trigger event called")
+        while len(self.event_list) > 0:
+            self.current_time += 1
+            event = self.event_list[0]
+            if self.current_time == int(event.time_stamp):
+                event = self.event_list.pop(0)
+                if event.event_type == 'ADD_NODE':
+                    print(event.event_type)
+                    node_info = event.node_id + ":" + self.get_string_from_list(event.subscription_list) + ":" + self.get_string_from_list(event.connected_node_list) + ":" + self.get_string_from_list(event.connected_node_cost_list)
+                    self.add_new_node(node_info)
+
+                elif event.event_type == 'DELETE_NODE':
+                    print(event.event_type)
+                elif event.event_type == 'SEND_MESSAGE':
+                    print(event.event_type)
+                elif event.event_type == 'RECEIVE_MESSAGE':
+                    print(event.event_type)
+                elif event.event_type == 'ADD_SUBSCRIPTION':
+                    print(event.event_type)
+                elif event.event_type == 'DELETE_SUBSCRIPTION':
+                    print(event.event_type)
+
+    def get_string_from_list(self, list):
+        ans = ""
+        for item in list:
+            ans += item
+            ans += ','
+        return ans[0:len(ans)-1]
 
     # Dynamically add new nodes based on the event
     def add_new_node(selfs, node_info):
         print(node_info)
-
         selfs.create_new_node(node_info)
+        new_node = selfs.node_list[len(selfs.node_list)-1]
+
+        for nodeId in new_node.connected_nodes:
+            for node in selfs.node_list:
+                if node.node_Id == nodeId:
+                    cost = new_node.connected_nodes[str(nodeId)]
+                    node.connected_nodes[str(new_node.node_Id)] = cost
+
+
 
 # Instantiate an object of Main
 mainObj = Main()

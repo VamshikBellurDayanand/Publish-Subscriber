@@ -29,6 +29,7 @@ class Node:
 
     # Constructor of Node
     def __init__(self, node_Id, subscription_list, connected_node_list, connected_node_cost_list):
+        self.connected_nodes = {}
         self.node_Id = node_Id
         self.subscription_list = subscription_list
         self.time_stamp = 0

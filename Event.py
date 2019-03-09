@@ -5,7 +5,8 @@ class Event:
     event_type = 0
     node_id = 0
     subscription_list = set()
-    connected_nodes = {}
+    connected_node_list = []
+    connected_node_cost_list = []
     message = ''
 
     # Event Constructor for Add Node
@@ -14,8 +15,6 @@ class Event:
         self.event_type = event_type
         self.node_id = node_id
         self.subscription_list = subscription_list
+        self.connected_node_list = connected_node_list
+        self.connected_node_cost_list = connected_node_cost_list
 
-        i = 0
-        while connected_node_list != None and i < len(connected_node_list):
-            self.connected_nodes[str(connected_node_list[i])] = connected_node_cost_list[i].rstrip()
-            i += 1
