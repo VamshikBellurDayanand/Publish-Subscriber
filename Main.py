@@ -1,5 +1,5 @@
 from Node import Node
-import Util
+from Event import Event
 
 class Main:
 
@@ -71,23 +71,52 @@ class Main:
 
         if event_type == 'ADD_NODE':
             print("The event type is Add Node")
+            node_id = event_info_list[2]
+            print(node_id)
+            subscription_list = event_info_list[3].split(",")
+            print(subscription_list)
+            connected_node_list = event_info_list[4].split(",")
+            print(connected_node_list)
+            connected_node_cost_list = event_info_list[5].split(",")
+            print(connected_node_cost_list)
+
+            new_Event = Event(timestamp, event_type, node_id, subscription_list, connected_node_list, connected_node_cost_list, None, None)
 
         elif event_type == 'DELETE_NODE':
             print("The event type is Delete Node")
+            node_id = event_info_list[2]
+
+            new_Event = Event(timestamp, event_type, node_id, None, None, None, None, None)
 
         elif event_type == 'SEND_MESSAGE':
             print("The event type is Send Message")
+            node_id = event_info_list[2]
+            message = event_info_list[3]
+            message_topic = event_info_list[4]
+
+            new_Event = Event(timestamp, event_type, node_id, None, None, None, message, message_topic)
 
         elif event_type == 'RECEIVE_MESSAGE':
             print("The event type is Receive Message")
+            node_id = event_info_list[2]
+
+            new_Event = Event(timestamp, event_type, node_id, None, None, None, None, None)
 
         elif event_type == 'ADD_SUBSCRIPTION':
             print("The event type is Add Subscription")
+            node_id = event_info_list[2]
+            subscription_list = event_info_list[3]
+
+            new_Event = Event(timestamp, event_type, node_id, subscription_list, None, None, None, None)
 
         elif event_type == 'DELETE_SUBSCRIPTION':
             print("The event type is Delete Subscription")
+            node_id = event_info_list[2]
+            subscription_list = event_info_list[3]
 
-        #self.event_list.append(event_info)                          # Add to the event list
+            new_Event = Event(timestamp, event_type, node_id, subscription_list, None, None, None, None)
+
+        self.event_list.append(event_info)                          # Add to the event list
 
 
     # Trigger the event based on the time_stamp
