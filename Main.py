@@ -33,7 +33,6 @@ class Main:
                 print("key: " + key + ":" + val)
 
 
-
     # Read the Node configuration file and create the Node objects
     def read_node_configuration_file(self, filePath):
 
@@ -68,17 +67,18 @@ class Main:
         self.node_list.append(new_node)                              # Add to the node list
         #new_node.connected_nodes.clear()
 
-
     # Delete the existing node and configure it's neighbours
     def remove_node(self, node_info):
         print(node_info)
-        if node_info in self.node_list:                             # If node is active and is not deleted
-            for node in node_info.connected_nodes:                  # Update in all of the node's neighbours
-                if node_info.node_Id in node.connected_nodes:
-                    node.connected_nodes.pop(node_info.node_Id)
-            self.node_list.remove(node_info.node_Id)                # Remove the node from the list
-        else:
-            print("Node with id " + node_info.node_Id + " is already deleted.")
+
+        for node in self.node_list:
+            if node_info in node.connected_nodes:
+                node.connected_nodes.pop(node_info)
+
+        for node in self.node_list:
+            if node.node_Id == node_info:
+                self.node_list.remove(node)
+                print("Node is deleted")
 
     # Create new event and add it to the event queue
     def create_new_event(self, event_info):
@@ -152,6 +152,10 @@ class Main:
 
                 elif event.event_type == 'DELETE_NODE':
                     print(event.event_type)
+                    self.print_nodes_connected_list()
+                    node_info = event.node_id
+                    self.remove_node(node_info)
+
                 elif event.event_type == 'SEND_MESSAGE':
                     print(event.event_type)
                 elif event.event_type == 'RECEIVE_MESSAGE':
