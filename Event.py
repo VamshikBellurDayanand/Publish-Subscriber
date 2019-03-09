@@ -8,6 +8,7 @@ class Event:
     connected_node_list = []
     connected_node_cost_list = []
     message = ''
+    message_topic = ''
 
     # Event Constructor for Add Node
     def __init__(self, time_stamp, event_type, node_id, subscription_list, connected_node_list, connected_node_cost_list, message, message_topic):
@@ -17,4 +18,6 @@ class Event:
         self.subscription_list = subscription_list
         self.connected_node_list = connected_node_list
         self.connected_node_cost_list = connected_node_cost_list
+        self.message = message
+        self.message_topic = message_topic
 
