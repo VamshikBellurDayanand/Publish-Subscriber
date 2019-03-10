@@ -22,6 +22,9 @@ class Node:
     # List of random nodes selected
     random_nodes_selected = list()
 
+    # List of random nodes to receive the message
+    random_nodes_selected_to_recieve = list()
+
     # No of random nodes, the message to be gossiped.
     no_of_random_nodes = Util.NO_OF_RANDOM_NODES
 
@@ -37,6 +40,7 @@ class Node:
         self.out_going_queue_time = list()
         self.out_going_message_queue = list()
         self.random_nodes_selected = list()
+        self.random_nodes_selected_to_recieve = list()
         self.connected_nodes = {}
         self.node_Id = node_Id
         self.subscription_list = subscription_list
@@ -57,7 +61,7 @@ class Node:
 
     # Send message to other nodes by placing the message in the outgoing queue
     def send_message(self, message_object, global_time):
-        print ("Send message called")
+        #print ("Send message called")
         put_message = message_object
         list_of_chosen_nodes = random.sample(set(self.connected_nodes),self.no_of_random_nodes)  # select random nodes to gossip
         put_message.node_time_stamp = self.time_stamp + 1
@@ -66,7 +70,16 @@ class Node:
             self.random_nodes_selected.append(node)
             self.out_going_message_queue.append(put_message)
             self.out_going_queue_time.append(int(self.connected_nodes[node]) + global_time)
-            print("Node selected is " + node + " and the time it should send message is " + str(int(self.connected_nodes[node]) + global_time))
+            print(str(global_time) + ":" + "SENT" + ":" + self.node_Id + ":" + node + ":" + message_object.topic + ":" + message_object.msg + ":" + str(int(self.connected_nodes[node]) + global_time) + "\n")
+            Util.log_file.write(str(global_time) + ":" + "SENT" + ":" + self.node_Id + ":" + node + ":" + message_object.topic + ":" + message_object.msg + ":" + str(int(self.connected_nodes[node]) + global_time) + "\n")
+            #print("Node selected is " + node + " and the time it should send message is " + str(int(self.connected_nodes[node]) + global_time))
+
+    # The message is currently in the randomly chosen node's incoming queue
+    def pull_gossip(self):
+        print("pull gossip called")
+        list_of_chosen_nodes = random.sample(set(self.connected_nodes),self.no_of_random_nodes)  # select random nodes to gossip
+        for node in list_of_chosen_nodes:
+            self.random_nodes_selected_to_recieve.append(node)
 
     def get_random_choosen_nodes(self):
         list_of_chosen_nodes = random.sample(set(self.connected_nodes), self.no_of_random_nodes)
