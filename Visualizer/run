@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python vis.py topo.txt log.txt True
+#python vis.py topo.txt log.txt True 0.1
+python vis.py topo.txt log.txt True 0.2

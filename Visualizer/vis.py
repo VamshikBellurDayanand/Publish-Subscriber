@@ -12,6 +12,7 @@ import time
 pylab.ion()
 
 REFRESH_NODES = False
+CYCLE_PERIOD=1.0
 
 lines = []
 colors = {} #dict of 'topic-msg':color
@@ -56,7 +57,7 @@ def load_log(log_file):
     #split lines into fields
     line = f.readline()
     while (line != ""):
-        line = line.strip("\n")
+        line = line.strip("\r\n")
         fields = line.split(":")
         exe_script.append(fields)
         line = f.readline()
@@ -106,7 +107,6 @@ def ariv_msg(s_node, r_node):
 def cycle():
     #reset node, node borders, edge colors at beginning of every cycle
     plt.clf()
-    print rf_q
     labels = nx.get_edge_attributes(G, 'weight')
 
     EC = nx.get_edge_attributes(G, 'color')
@@ -116,6 +116,7 @@ def cycle():
 
     NC = nx.get_node_attributes(G, 'color')
     nc = []
+
     for n in G.nodes():
         nc.append(NC[n])
 
@@ -123,8 +124,6 @@ def cycle():
     ns = []
     for n in G.nodes():
         ns.append(NS[n])
-
-    print ns
 
     nx.draw_networkx_labels(G, pos)
     nx.draw_networkx_nodes(G, pos, nodelist=G.nodes(), node_color=nc, node_size=450, labels=G.nodes(), vmin=0, vmax=255, cmap=plt.cm.rainbow, with_labels=True, shape=ns) 
@@ -147,8 +146,10 @@ def run_script_line(s_line):
         ariv_msg(s_line[2], s_line[3]) 
     elif(s_line[1] == 'ANODE'):
         add_node(s_line[2], s_line[3].split(","), s_line[4].split(","))
+        print G.nodes()
         print "anode"
     elif(s_line[1] == 'RNODE'):
+        print s_line[2]
         del_node(s_line[2])        
         print "rnode"
     else:
@@ -167,7 +168,7 @@ def exe_log():
                     break 
         gtime = gtime + 1
         cycle()
-        pause(1)
+        pause(CYCLE_PERIOD)
         if(REFRESH_NODES == True):
             reset()
 
@@ -177,7 +178,7 @@ load_topo(sys.argv[1])
 load_log(sys.argv[2])
 if(sys.argv[3] == "True"):
     REFRESH_NODES=True
-
+CYCLE_PERIOD=(float(sys.argv[4]))
 pos = nx.shell_layout(G)
 pylab.show()
 exe_log()
