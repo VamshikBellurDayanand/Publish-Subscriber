@@ -1,6 +1,7 @@
 import random
 import Util
-
+import time
+import Message
 class Node:
 
     # Node id which identifies each node
@@ -10,13 +11,16 @@ class Node:
     connected_nodes = {}
 
     # List to hold the link cost for sending the messages.
-    out_going_queue_time = []
+    out_going_queue_time = list()
 
     # List to hold the incoming message queue
-    incoming_message_queue = []
+    incoming_message_queue = list()
 
     # List to hold the outgoing message queue
-    out_going_message_queue = []
+    out_going_message_queue = list()
+
+    # List of random nodes selected
+    random_nodes_selected = list()
 
     # No of random nodes, the message to be gossiped.
     no_of_random_nodes = Util.NO_OF_RANDOM_NODES
@@ -29,6 +33,10 @@ class Node:
 
     # Constructor of Node
     def __init__(self, node_Id, subscription_list, connected_node_list, connected_node_cost_list):
+        self.incoming_message_queue = list()
+        self.out_going_queue_time = list()
+        self.out_going_message_queue = list()
+        self.random_nodes_selected = list()
         self.connected_nodes = {}
         self.node_Id = node_Id
         self.subscription_list = subscription_list
@@ -48,13 +56,28 @@ class Node:
         print ("Process message called")
 
     # Send message to other nodes by placing the message in the outgoing queue
-    def send_message(self):
+    def send_message(self, message_object, global_time):
         print ("Send message called")
-        print (random.sample(set(self.connected_nodes), self.no_of_random_nodes))  # select random nodes to gossip
+        put_message = message_object
+        list_of_chosen_nodes = random.sample(set(self.connected_nodes),self.no_of_random_nodes)  # select random nodes to gossip
+        put_message.node_time_stamp = self.time_stamp + 1
+
+        for node in list_of_chosen_nodes:
+            self.random_nodes_selected.append(node)
+            self.out_going_message_queue.append(put_message)
+            self.out_going_queue_time.append(int(self.connected_nodes[node]) + global_time)
+            print("Node selected is " + node + " and the time it should send message is " + str(int(self.connected_nodes[node]) + global_time))
+
+    def get_random_choosen_nodes(self):
+        list_of_chosen_nodes = random.sample(set(self.connected_nodes), self.no_of_random_nodes)
+        return list_of_chosen_nodes
 
 
+    def set_out_going_message_queue(self, out_going_message_queue):
+        self.out_going_message_queue = out_going_message_queue
 
-
+    def get_out_going_message_queue(self):
+        return self.out_going_message_queue
 
 
 

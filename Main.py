@@ -1,5 +1,6 @@
 from Node import Node
 from Event import Event
+from Message import Message
 
 class Main:
 
@@ -17,7 +18,7 @@ class Main:
         self.read_node_configuration_file(self.node_configuration_filePath)    # Read the node configuration file
         self.read_event_configuration_file(self.event_configuration_filePath)  # Read the event configuration file
         self.trigger_event()
-        #self.print_event_list()
+        self.print_event_list()
         #self.print_nodes_connected_list()
 
     # print the active nodes
@@ -32,10 +33,8 @@ class Main:
             for key,val in node.connected_nodes.items():
                 print("key: " + key + ":" + val)
 
-
     # Read the Node configuration file and create the Node objects
     def read_node_configuration_file(self, filePath):
-
         file_object = open(filePath, "r")
 
         # printing the data from file : line by line
@@ -62,8 +61,6 @@ class Main:
         connected_node_cost_list = node_info_list[3].split(",")
 
         new_node = Node(node_id, subscription_list, connected_node_list, connected_node_cost_list)
-       # print(new_node.node_Id)
-       # print(new_node.connected_nodes)
         self.node_list.append(new_node)                              # Add to the node list
         #new_node.connected_nodes.clear()
 
@@ -124,39 +121,47 @@ class Main:
 
         self.event_list.append(new_Event)                          # Add to the event list
 
-
     # Trigger the event based on the time_stamp
     def trigger_event(self):
-        while len(self.event_list) > 0:
+        while self.current_time < 30:
             self.current_time += 1
-            event = self.event_list[0]
-            if self.current_time == int(event.time_stamp):
-                event = self.event_list.pop(0)
-                if event.event_type == 'ADD_NODE':
-                    print("Trigger event:"+ event.event_type)
-                    node_info = event.node_id + ":" + self.get_string_from_list(event.subscription_list) + ":" + self.get_string_from_list(event.connected_node_list) + ":" + self.get_string_from_list(event.connected_node_cost_list)
-                    self.add_new_node(node_info)
+            if len(self.event_list) > 0:
+                event = self.event_list[0]
+                if self.current_time == int(event.time_stamp):
+                    event = self.event_list.pop(0)
+                    if event.event_type == 'ADD_NODE':
+                        print("Trigger event:"+ event.event_type)
+                        node_info = event.node_id + ":" + self.get_string_from_list(event.subscription_list) + ":" + self.get_string_from_list(event.connected_node_list) + ":" + self.get_string_from_list(event.connected_node_cost_list)
+                        self.add_new_node(node_info)
 
-                elif event.event_type == 'DELETE_NODE':
-                    print("Trigger event:" + event.event_type)
-                    node_info = event.node_id
-                    self.remove_node(node_info)
+                    elif event.event_type == 'DELETE_NODE':
+                        print("Trigger event:" + event.event_type)
+                        node_info = event.node_id
+                        self.remove_node(node_info)
 
-                elif event.event_type == 'SEND_MESSAGE':
-                    print("Trigger event:" + event.event_type)
-                    node_info = event.node_id + ":" + event.message + ":" + event.message_topic
+                    elif event.event_type == 'SEND_MESSAGE':
+                        print("Trigger event:" + event.event_type)
+                        node_id = event.node_id
+                        new_list = self.node_list.copy()
+                        for node in new_list:
+                            if node.node_Id == node_id:
+                                message_object = Message(event.message_topic, event.message, node.time_stamp,
+                                                         node.time_stamp)
+                                node.send_message(message_object, self.current_time)
+                                break
 
+                    elif event.event_type == 'RECEIVE_MESSAGE':
+                        print("Trigger event:" + event.event_type)
 
-                elif event.event_type == 'RECEIVE_MESSAGE':
-                    print("Trigger event:" + event.event_type)
+                    elif event.event_type == 'ADD_SUBSCRIPTION':
+                        print("Trigger event:" + event.event_type)
+                        self.add_new_subscription(event)
 
-                elif event.event_type == 'ADD_SUBSCRIPTION':
-                    print("Trigger event:" + event.event_type)
-                    self.add_new_subscription(event)
+                    elif event.event_type == 'DELETE_SUBSCRIPTION':
+                        print("Trigger event:" + event.event_type)
+                        self.delete_subscription(event)
 
-                elif event.event_type == 'DELETE_SUBSCRIPTION':
-                    print("Trigger event:" + event.event_type)
-                    self.delete_subscription(event)
+            self.update_message_queue()
 
     # Concatenate each item in the list to form a string
     def get_string_from_list(self, list):
@@ -197,6 +202,32 @@ class Main:
                     curr_subscription_list.remove(item)
                 print(node.subscription_list)
 
+    # Update the outgoing queue for every clock tick
+    def update_message_queue(self):
+
+        for node in self.node_list:
+            i = 0
+            while i < len(node.out_going_queue_time):
+                if node.out_going_queue_time[i] == self.current_time:
+                    for receiving_node in self.node_list:
+                        if i < len(node.random_nodes_selected) and receiving_node.node_Id == node.random_nodes_selected[i]:
+
+                            message = node.out_going_message_queue[i]
+                            receiving_node.incoming_message_queue.append(message)
+
+                            node.out_going_message_queue.pop(i)
+                            node.out_going_queue_time.pop(i)
+                            node.random_nodes_selected.pop(i)
+
+                            print(receiving_node.node_Id + " updated")
+                            i = 0
+                i += 1
+
+    # Get the node with specific node Id
+    def get_node(self, node_id):
+        for node in self.node_list:
+            if node.node_Id == node_id:
+                return node
 
 # Instantiate an object of Main
 mainObj = Main()

@@ -1,5 +1,1 @@
-1:ADD_NODE:K:Cricket,Movies,Music:A,B,C:1,2,3
-2:DELETE_NODE:K
-4:SEND_MESSAGE:A:This is first message:Games
-5:ADD_SUBSCRIPTION:C:Tennis,Rock
-6:DELETE_SUBSCRIPTION:C:Tennis
+1:SEND_MESSAGE:A:This is first message:Games
