@@ -1,6 +1,7 @@
 from Node import Node
 from Event import Event
 from Message import Message
+import Util
 
 class Main:
 
@@ -48,7 +49,7 @@ class Main:
 
         # printing the data from file : line by line
         for x in file_object:
-            self.create_new_event(x)
+            self.create_new_event(x.rstrip())
 
     # Create a new node and configure it's neighbours
     def create_new_node(self, node_info):
@@ -89,10 +90,14 @@ class Main:
             connected_node_list = event_info_list[4].split(",")
             connected_node_cost_list = event_info_list[5].split(",")
             new_Event = Event(timestamp, event_type, node_id, subscription_list, connected_node_list, connected_node_cost_list, None, None)
+            logger_message = str(self.current_time) + ":" + "ANODE" + ":" + node_id + ":" + self.get_string_from_list(connected_node_list) + ":" + self.get_string_from_list(connected_node_cost_list) + "\n"
+            Util.log_file.write(logger_message)
 
         elif event_type == 'DELETE_NODE':
             print("The event type is Delete Node")
             node_id = event_info_list[2]
+            logger_message = str(self.current_time) + ":" + "RNODE" + ":" + node_id  + "\n"
+            Util.log_file.write(logger_message)
             new_Event = Event(timestamp, event_type, node_id, None, None, None, None, None)
 
         elif event_type == 'SEND_MESSAGE':
@@ -140,7 +145,7 @@ class Main:
                         self.remove_node(node_info)
 
                     elif event.event_type == 'SEND_MESSAGE':
-                        print("Trigger event:" + event.event_type)
+                        # print("Trigger event:" + event.event_type)
                         node_id = event.node_id
                         new_list = self.node_list.copy()
                         for node in new_list:
@@ -152,6 +157,11 @@ class Main:
 
                     elif event.event_type == 'RECEIVE_MESSAGE':
                         print("Trigger event:" + event.event_type)
+                        node_id = event.node_id
+                        for node in self.node_list:
+                            if node.node_Id == node_id:
+                                node.receive_message()
+                                break
 
                     elif event.event_type == 'ADD_SUBSCRIPTION':
                         print("Trigger event:" + event.event_type)
@@ -162,6 +172,7 @@ class Main:
                         self.delete_subscription(event)
 
             self.update_message_queue()
+            self.update_incoming_message_queue()
 
     # Concatenate each item in the list to form a string
     def get_string_from_list(self, list):
@@ -203,6 +214,31 @@ class Main:
                 print(node.subscription_list)
 
     # Update the outgoing queue for every clock tick
+    def update_incoming_message_queue(self):
+
+        for node in self.node_list:
+            i = 0
+            while i < len(node.incoming_message_queue):
+                i += 1
+                message_object = node.incoming_message_queue.pop(0)
+
+                logger_message = str(self.current_time) + ":" + "RECV" + ":" + node.node_Id + ":" + message_object.topic + ":" + message_object.msg + ":"
+
+                is_subscribed = "NO"
+                #time = 0
+                for topic in node.subscription_list:
+                    if topic in message_object.topic:
+                        is_subscribed = "YES"
+                        node.time_stamp = max (int(node.time_stamp), int(message_object.node_time_stamp)) + 1
+                        #time =  max (int(node.time_stamp), int(message_object.node_time_stamp)) + 1
+                        print(message_object.msg + " is consumed by node " + node.node_Id + " at " + str(self.current_time))
+                        break
+
+                logger_message += is_subscribed.rstrip() + ":" + str(node.time_stamp) +"\n"
+                Util.log_file.write(logger_message)
+                node.send_message(message_object, self.current_time)
+
+    # Update the outgoing queue for every clock tick
     def update_message_queue(self):
 
         for node in self.node_list:
@@ -210,8 +246,9 @@ class Main:
             while i < len(node.out_going_queue_time):
                 if node.out_going_queue_time[i] == self.current_time:
                     for receiving_node in self.node_list:
+                        logger_message = str(self.current_time) + ":" + "ARIV" + ":" + node.node_Id + ":"
                         if i < len(node.random_nodes_selected) and receiving_node.node_Id == node.random_nodes_selected[i]:
-
+                            logger_message += receiving_node.node_Id + "\n"
                             message = node.out_going_message_queue[i]
                             receiving_node.incoming_message_queue.append(message)
 
@@ -220,6 +257,7 @@ class Main:
                             node.random_nodes_selected.pop(i)
 
                             print(receiving_node.node_Id + " updated")
+                            Util.log_file.write(logger_message)
                             i = 0
                 i += 1
 
