@@ -1,0 +1,9 @@
+A:Cricket:B,C,E,G,J:5,8,4,10,16
+B:Cricket,Games:D,F,E:12,11,2,16
+C:Games,Cricket:A,D,F,G,E:8,7,10,16,10
+D:Songs,Music,Cricket:A,E,G,J,H:11,3,6,5,11
+E:Cricket,Songs:D,A,J:3,4,10
+F:Music,Cricket,Songs:A,D,G,H:8,3,11,16
+G:Music:B,C,J,H,A,E:20,16,14,8,10,3
+H:Sports:A,F,E:9,16,47
+J:Music:G,A,B,H:14,16,3,4

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python vis.py topo.txt log.txt True
