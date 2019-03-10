@@ -1,4 +1,5 @@
 #!/bin/bash
 
+#FORMAT: python vis.py <topology file> <log file> <node color refresh True/False> <cycle interval>
 #python vis.py topo.txt log.txt True 0.1
 python vis.py topo.txt log.txt True 0.2

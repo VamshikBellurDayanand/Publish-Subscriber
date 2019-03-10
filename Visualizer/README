@@ -1,5 +1,5 @@
 Format:
-python vis.py <topology file> <log file> <node color refresh True/False>
+python vis.py <topology file> <log file> <node color refresh True/False> <cycle interval>
 
 Topology File:
 refer to topo.txt and topo2.txt
