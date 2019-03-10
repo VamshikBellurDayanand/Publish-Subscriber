@@ -1,0 +1,18 @@
+Format:
+python vis.py <topology file> <log file> <node color refresh True/False>
+
+Topology File:
+refer to topo.txt and topo2.txt
+
+Log File:
+refer to log.txt
+
+Log File format
+<time>:SENT:<src>:<dest>:<topic>:<message>:<lamport timestamp>      AT the time putting out going q
+<time>:RECV:<dest>:<topic>:<message>:<is_subscriber>:<lamport timestamp> after subscription check
+<time>:ARIV:<src>:<dest>   Sender deposits to incoming q
+<time>:ANODE:<node>:<cnodeA, cnodeB,...>:<costA, costB,...>  Add node - event
+<time>:RNODE:<node>   remove node event
+
+
+
