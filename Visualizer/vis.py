@@ -13,6 +13,7 @@ pylab.ion()
 
 REFRESH_NODES = False
 CYCLE_PERIOD=1.0
+MAX_CYCLES=50
 
 lines = []
 colors = {} #dict of 'topic-msg':color
@@ -31,7 +32,7 @@ def load_topo(topo_file):
 
     line = f.readline()
     while (line != ""):
-        line = line.strip("\n")
+        line = line.strip("\r\n")
         fields = line.split(":") 
         lines.append(fields)
         line = f.readline()
@@ -84,6 +85,9 @@ def get_color(topic_msg):
 
 def recv_msg(node, topic_msg, is_sub):
     #switch node to corresponding color
+    if( not(node in G.nodes())):
+        return
+
     c = get_color(topic_msg)
     G.nodes[node]['color'] = c
     if (is_sub == 'YES'):
@@ -95,12 +99,18 @@ def recv_msg(node, topic_msg, is_sub):
 
 def send_msg(s_node, r_node, topic_msg):
     #find edge
+    if (not(s_node in G.nodes()) or not(r_node in G.nodes())):
+        return
+
     c = get_color(topic_msg)
     G.edges[s_node, r_node]['color'] = c
     G.edges[r_node, s_node]['color'] = c
     print ("sent_msg")
 
 def ariv_msg(s_node, r_node):
+    if (not(s_node in G.nodes()) or not(r_node in G.nodes())):
+        return
+
     G.edges[s_node, r_node]['color'] = 0
     G.edges[r_node, s_node]['color'] = 0
 
@@ -158,7 +168,8 @@ def run_script_line(s_line):
 def exe_log():
     pc = 0
     gtime = 0
-    while (1):
+    counter = 0
+    while counter < MAX_CYCLES:
         if(pc < len(exe_script)):
             while(int(exe_script[pc][0]) <= gtime):
                 #run all scheduled functions at each given time
@@ -171,6 +182,8 @@ def exe_log():
         pause(CYCLE_PERIOD)
         if(REFRESH_NODES == True):
             reset()
+        print ("cycle[" + str(counter) + "]")
+        counter = counter + 1
 
 #load_topo("topo.txt")
 #load_log("log.txt")
