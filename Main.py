@@ -128,7 +128,7 @@ class Main:
 
     # Trigger the event based on the time_stamp
     def trigger_event(self):
-        while self.current_time < 30:
+        while self.current_time < 1000000:
             self.current_time += 1
             if len(self.event_list) > 0:
                 event = self.event_list[0]
@@ -151,7 +151,7 @@ class Main:
                         for node in new_list:
                             if node.node_Id == node_id:
                                 message_object = Message(event.message_topic, event.message, node.time_stamp,
-                                                         node.time_stamp)
+                                                         node.time_stamp, Util.MESSAGE_TIMER)
                                 node.send_message(message_object, self.current_time)
                                 break
 
@@ -225,18 +225,19 @@ class Main:
                 logger_message = str(self.current_time) + ":" + "RECV" + ":" + node.node_Id + ":" + message_object.topic + ":" + message_object.msg + ":"
 
                 is_subscribed = "NO"
-                #time = 0
                 for topic in node.subscription_list:
                     if topic in message_object.topic:
                         is_subscribed = "YES"
                         node.time_stamp = max (int(node.time_stamp), int(message_object.node_time_stamp)) + 1
-                        #time =  max (int(node.time_stamp), int(message_object.node_time_stamp)) + 1
                         print(message_object.msg + " is consumed by node " + node.node_Id + " at " + str(self.current_time))
                         break
 
                 logger_message += is_subscribed.rstrip() + ":" + str(node.time_stamp) +"\n"
                 Util.log_file.write(logger_message)
-                node.send_message(message_object, self.current_time)
+
+                message_object.time_to_live -= 1
+                if message_object.time_to_live > 0:
+                    node.send_message(message_object, self.current_time)
 
     # Update the outgoing queue for every clock tick
     def update_message_queue(self):

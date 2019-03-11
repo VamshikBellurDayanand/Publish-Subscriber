@@ -26,7 +26,7 @@ def load_topo(topo_file):
     try:
         f = open(topo_file, "r")
     except IOError:
-        print "Failed to open %s" % topo_file
+        print ("Failed to open %s" % topo_file)
         return -1
 
     line = f.readline()
@@ -51,7 +51,7 @@ def load_log(log_file):
     try:
         f = open(log_file, "r")
     except IOError:
-        print "Failed to open %s" % log_file
+        print ("Failed to open %s" % log_file)
         return -1
 
     #split lines into fields
@@ -91,14 +91,14 @@ def recv_msg(node, topic_msg, is_sub):
 
     rf_q.append(node)
 
-    print "recved msg"
+    print ("recved msg")
 
 def send_msg(s_node, r_node, topic_msg):
     #find edge
     c = get_color(topic_msg)
     G.edges[s_node, r_node]['color'] = c
     G.edges[r_node, s_node]['color'] = c
-    print "sent_msg"
+    print ("sent_msg")
 
 def ariv_msg(s_node, r_node):
     G.edges[s_node, r_node]['color'] = 0
@@ -146,12 +146,12 @@ def run_script_line(s_line):
         ariv_msg(s_line[2], s_line[3]) 
     elif(s_line[1] == 'ANODE'):
         add_node(s_line[2], s_line[3].split(","), s_line[4].split(","))
-        print G.nodes()
-        print "anode"
+        print (G.nodes())
+        print ("anode")
     elif(s_line[1] == 'RNODE'):
-        print s_line[2]
+        print (s_line[2])
         del_node(s_line[2])        
-        print "rnode"
+        print ("rnode")
     else:
         print("Invalid script line: %s" % s_line)
 
