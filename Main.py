@@ -90,14 +90,10 @@ class Main:
             connected_node_list = event_info_list[4].split(",")
             connected_node_cost_list = event_info_list[5].split(",")
             new_Event = Event(timestamp, event_type, node_id, subscription_list, connected_node_list, connected_node_cost_list, None, None)
-            logger_message = str(self.current_time) + ":" + "ANODE" + ":" + node_id + ":" + self.get_string_from_list(connected_node_list) + ":" + self.get_string_from_list(connected_node_cost_list) + "\n"
-            Util.log_file.write(logger_message)
 
         elif event_type == 'DELETE_NODE':
             print("The event type is Delete Node")
             node_id = event_info_list[2]
-            logger_message = str(self.current_time) + ":" + "RNODE" + ":" + node_id  + "\n"
-            Util.log_file.write(logger_message)
             new_Event = Event(timestamp, event_type, node_id, None, None, None, None, None)
 
         elif event_type == 'SEND_MESSAGE':
@@ -138,11 +134,15 @@ class Main:
                         print("Trigger event:"+ event.event_type)
                         node_info = event.node_id + ":" + self.get_string_from_list(event.subscription_list) + ":" + self.get_string_from_list(event.connected_node_list) + ":" + self.get_string_from_list(event.connected_node_cost_list)
                         self.add_new_node(node_info)
+                        logger_message = str(self.current_time) + ":" + "ANODE" + ":" + event.node_id + ":" + self.get_string_from_list(event.connected_node_list) + ":" + self.get_string_from_list(event.connected_node_cost_list) + "\n"
+                        Util.log_file.write(logger_message)
 
                     elif event.event_type == 'DELETE_NODE':
                         print("Trigger event:" + event.event_type)
                         node_info = event.node_id
                         self.remove_node(node_info)
+                        logger_message = str(self.current_time) + ":" + "RNODE" + ":" + event.node_id  + "\n"
+                        Util.log_file.write(logger_message)
 
                     elif event.event_type == 'SEND_MESSAGE':
                         # print("Trigger event:" + event.event_type)
